@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShieldPass</title>
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); }
+            to { transform: translateY(0); }
+        }
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        @keyframes bounce {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        body {
+            background-color: #151314;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            animation: fadeIn 1s ease-in-out;
+        }
+        #snowflakesCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        #generatorContainer {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            animation: slideIn 1s ease-in-out;
+        }
+        button, select, input {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            animation: popIn 0.5s ease-in-out;
+        }
+        select {
+            background-color: #333;
+            color: white;
+        }
+        button {
+            background-color: #444;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        .config {
+            display: none;
+            text-align: left;
+            margin-top: 20px;
+        }
+        .config label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        .config label span {
+            flex: 1;
+            margin-left: 10px;
+        }
+        .config input[type="range"] {
+            flex: 2;
+        }
+        .config input[type="checkbox"] {
+            display: inline-block;
+        }
+        .config input[type="checkbox"] + label {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+            background-color: #ccc;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .config input[type="checkbox"] + label:before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .config input[type="checkbox"]:checked + label {
+            background-color: #444;
+        }
+        .config input[type="checkbox"]:checked + label:before {
+            transform: translateX(25px);
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ffcc00;
+            cursor: pointer;
+            animation: fadeIn 1s ease-in-out;
+        }
+        #result.godlike {
+            color: red;
+        }
+        #result.beyond-godlike {
+            color: red;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: shake 0.5s infinite;
+        }
+        #result.bounce {
+            animation: bounce 0.5s ease-in-out;
+        }
+        #copyPopup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #444;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            animation: popIn 0.5s ease-in-out;
+            transition: opacity 0.5s ease-in-out;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 80%;
+            height: 8px;
+            background: #444;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #ffcc00;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #333;
+            animation: popIn 0.5s ease-in-out;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #ffcc00;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #333;
+            animation: popIn 0.5s ease-in-out;
+        }
+        input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            font-size: 16px;
+            border: 2px solid #444;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            animation: popIn 0.5s ease-in-out;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #ffcc00;
+        }
+        .selector-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .selector-container select {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #444;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .selector-container select:hover {
+            background-color: #444;
+            border-color: #ffcc00;
+        }
+        .godlike {
+            color: red;
+        }
+
+        .beyond-godlike {
+            color: red;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: shake 0.5s infinite;
+        }
+        .title {
+            position: absolute;
+            top: 60px; /* Lowered further */
+            text-align: center;
+            width: 100%;
+            font-size: 36px; /* Bigger text */
+            font-weight: bold;
+            color: #ffcc00;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">ShieldPass</div>
+    <canvas id="snowflakesCanvas"></canvas>
+    <div id="generatorContainer">
+        <div class="selector-container">
+            <select id="typeSelector">
+                <option value="password">Password</option>
+                <option value="passphrase">Passphrase</option>
+            </select>
+        </div>
+        <div id="passwordConfig" class="config">
+            <label>
+                <input type="range" id="passwordLengthSlider" min="6" max="64" value="12" oninput="updatePasswordLength()">
+                <span>Length: <input type="number" id="passwordLength" min="6" max="64" value="12" oninput="updatePasswordLengthSlider()"></span>
+            </label>
+            <label>
+                <input type="checkbox" id="includeNumbers">
+                <span>Include Numbers</span>
+            </label>
+            <label>
+                <input type="checkbox" id="includeSymbols">
+                <span>Include Symbols</span>
+            </label>
+            <label>
+                <input type="checkbox" id="includeUppercase">
+                <span>Include Uppercase</span>
+            </label>
+            <label>
+                <input type="checkbox" id="noSequential">
+                <span>No Sequential</span>
+            </label>
+        </div>
+        <div id="passphraseConfig" class="config">
+            <label>
+                <input type="range" id="passphraseWordsSlider" min="2" max="8" value="4" oninput="updatePassphraseWords()">
+                <span>Amount of words: <input type="number" id="passphraseWords" min="2" max="8" value="4" oninput="updatePassphraseWordsSlider()"></span>
+            </label>
+            <label>
+                <input type="checkbox" id="capitalizeFirst">
+                <span>Capitalize first letter of each word</span>
+            </label>
+            <label>
+                <input type="checkbox" id="includeNumbersPassphrase">
+                <span>Include Numbers</span>
+            </label>
+            <label>
+                <input type="checkbox" id="includeSymbolsPassphrase">
+                <span>Include Symbols</span>
+            </label>
+        </div>
+        <button id="generate">Generate</button>
+        <div id="result" onclick="copyToClipboard()">Click to copy</div>
+    </div>
+    <div id="copyPopup">Copied to clipboard</div>
+    <script src="snowflakes.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Removed the script that fetches the word list from words.txt
+    </script>
+</body>
+</html>
