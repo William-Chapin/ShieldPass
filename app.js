@@ -1,19 +1,28 @@
-document.getElementById('typeSelector').addEventListener('change', toggleConfig);
 document.getElementById('generate').addEventListener('click', generate);
 
-function toggleConfig() {
-    const type = document.getElementById('typeSelector').value;
+function showConfig(type) {
     document.getElementById('passwordConfig').style.display = type === 'password' ? 'block' : 'none';
     document.getElementById('passphraseConfig').style.display = type === 'passphrase' ? 'block' : 'none';
+    document.getElementById('pinConfig').style.display = type === 'pin' ? 'block' : 'none';
+    document.getElementById('generate').setAttribute('data-type', type);
+
+    document.querySelectorAll('.button-container button').forEach(button => {
+        button.classList.remove('selected');
+    });
+
+    document.getElementById(type + 'Button').classList.add('selected');
+
     generate();
 }
 
 function generate() {
-    const type = document.getElementById('typeSelector').value;
+    const type = document.getElementById('generate').getAttribute('data-type');
     if (type === 'password') {
         generatePassword();
-    } else {
+    } else if (type === 'passphrase') {
         generatePassphrase();
+    } else if (type === 'pin') {
+        generatePin();
     }
 }
 
@@ -73,14 +82,28 @@ function generatePassphrase() {
         });
 }
 
+function generatePin() {
+    const length = parseInt(document.getElementById('pinLength').value);
+    let pin = "";
+    for (let i = 0; i < length; i++) {
+        pin += Math.floor(Math.random() * 10);
+    }
+    displayResult(pin);
+}
+
 function displayResult(result) {
     const resultElement = document.getElementById('result');
     resultElement.textContent = result;
 
-    resultElement.classList.remove('bounce');
-    void resultElement.offsetWidth;
-    resultElement.classList.add('bounce');
+    if (copyCount >= 11) {
+        resultElement.className = 'beyond-godlike';
+    } else {
+        resultElement.classList.remove('bounce');
+        void resultElement.offsetWidth;
+        resultElement.classList.add('bounce');
+    }
 }
+
 
 let copyCount = 0;
 let originalResult = "";
@@ -150,5 +173,16 @@ function updatePassphraseWordsSlider() {
     slider.value = numberInput.value;
 }
 
+function updatePinLength() {
+    const slider = document.getElementById('pinLengthSlider');
+    const numberInput = document.getElementById('pinLength');
+    numberInput.value = slider.value;
+}
 
-toggleConfig();
+function updatePinLengthSlider() {
+    const slider = document.getElementById('pinLengthSlider');
+    const numberInput = document.getElementById('pinLength');
+    slider.value = numberInput.value;
+}
+
+showConfig('password');

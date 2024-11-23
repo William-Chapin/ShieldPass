@@ -70,14 +70,15 @@
             animation: fadeIn 1s ease-in-out;
         }
         #snowflakesCanvas {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             z-index: -1;
+            pointer-events: none;
         }
         #generatorContainer {
             text-align: center;
-            background: rgba(255, 255, 255, 0.1);
+            background: #333;
             padding: 20px;
             border-radius: 10px;
             animation: slideIn 1s ease-in-out;
@@ -101,6 +102,9 @@
         }
         button:hover {
             background-color: #555;
+        }
+        button.selected {
+            box-shadow: 0 0 10px #ffcc00;
         }
         .config {
             display: none;
@@ -255,7 +259,6 @@
         .godlike {
             color: red;
         }
-
         .beyond-godlike {
             color: red;
             font-weight: bold;
@@ -264,24 +267,55 @@
         }
         .title {
             position: absolute;
-            top: 60px;
+            top: 100px;
             text-align: center;
             width: 100%;
             font-size: 36px;
             font-weight: bold;
             color: #ffcc00;
         }
+        .subtitle {
+            position: absolute;
+            top: 160px;
+            text-align: center;
+            width: 100%;
+            font-size: 18px;
+            color: white;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .button-container button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #444;
+            color: white;
+            cursor: pointer;
+            animation: popIn 0.5s ease-in-out;
+        }
+        .button-container button:hover {
+            background-color: #555;
+        }
+        .button-container button.selected {
+            box-shadow: 0 0 10px #ffcc00;
+        }
     </style>
 </head>
 <body>
     <div class="title">ShieldPass</div>
+    <div class="subtitle">Generate secure PINs, passwords, and passphrases!</div>
     <canvas id="snowflakesCanvas"></canvas>
     <div id="generatorContainer">
-        <div class="selector-container">
-            <select id="typeSelector">
-                <option value="password">Password</option>
-                <option value="passphrase">Passphrase</option>
-            </select>
+        <div class="button-container">
+            <button id="passwordButton" onclick="showConfig('password')">Password</button>
+            <button id="passphraseButton" onclick="showConfig('passphrase')">Passphrase</button>
+            <button id="pinButton" onclick="showConfig('pin')">PIN</button>
         </div>
         <div id="passwordConfig" class="config">
             <label>
@@ -321,6 +355,12 @@
             <label>
                 <input type="checkbox" id="includeSymbolsPassphrase">
                 <span>Include Symbols</span>
+            </label>
+        </div>
+        <div id="pinConfig" class="config">
+            <label>
+                <input type="range" id="pinLengthSlider" min="4" max="12" value="4" oninput="updatePinLength()">
+                <span>Length: <input type="number" id="pinLength" min="4" max="12" value="4" oninput="updatePinLengthSlider()"></span>
             </label>
         </div>
         <button id="generate">Generate</button>

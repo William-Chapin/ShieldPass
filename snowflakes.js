@@ -18,6 +18,23 @@ function createSnowflake() {
     };
 }
 
+function createSnowflakeAt(x, y) {
+    return {
+        x: x,
+        y: y,
+        radius: Math.random() * 4 + 1,
+        speed: Math.random() * 1 + 0.5,
+        wind: Math.random() * 2 - 1,
+        changeSpeed: Math.random() * 0.02
+    };
+}
+
+function addSnowflakesAt(x, y) {
+    for (let i = 0; i < 10; i++) {
+        snowflakes.push(createSnowflakeAt(x, y));
+    }
+}
+
 function updateSnowflakes() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const snowflakeColor = document.body.classList.contains('light-mode') ? 'black' : 'white';
@@ -55,6 +72,13 @@ function initSnowflakes() {
     }
     animateSnowflakes();
 }
+
+document.addEventListener('click', (event) => {
+    const x = event.clientX;
+    const y = event.clientY;
+    console.log(`Clicked at: ${x}, ${y}`);
+    addSnowflakesAt(x, y);
+});
 
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('load', initSnowflakes);
