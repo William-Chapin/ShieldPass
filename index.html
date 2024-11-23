@@ -305,6 +305,46 @@
         .button-container button.selected {
             box-shadow: 0 0 10px #ffcc00;
         }
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pattern-dot {
+            fill: #444;
+            stroke: #ffcc00;
+            stroke-width: 2;
+            position: relative;
+        }
+        .pattern-dot.selected {
+            fill: #ffcc00;
+        }
+        .pattern-dot text {
+            fill: white;
+            font-size: 12px;
+            font-weight: bold;
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+        .pattern-grid {
+            width: 150px;
+            height: 150px;
+            margin-top: 20px;
+        }
+        .pattern-dot {
+            fill: #444;
+            stroke: #ffcc00;
+            stroke-width: 2;
+        }
+        .pattern-dot.selected {
+            fill: #ffcc00;
+        }
+        .pattern-line {
+            stroke: #ffcc00;
+            stroke-width: 2;
+        }
     </style>
 </head>
 <body>
@@ -316,6 +356,7 @@
             <button id="passwordButton" onclick="showConfig('password')">Password</button>
             <button id="passphraseButton" onclick="showConfig('passphrase')">Passphrase</button>
             <button id="pinButton" onclick="showConfig('pin')">PIN</button>
+            <button id="patternButton" onclick="showConfig('pattern')">Pattern</button>
         </div>
         <div id="passwordConfig" class="config">
             <label>
@@ -346,7 +387,7 @@
             </label>
             <label>
                 <input type="checkbox" id="capitalizeFirst">
-                <span>Capitalize first letter of each word</span>
+                <span>Capitalize words</span>
             </label>
             <label>
                 <input type="checkbox" id="includeNumbersPassphrase">
@@ -362,6 +403,33 @@
                 <input type="range" id="pinLengthSlider" min="4" max="12" value="4" oninput="updatePinLength()">
                 <span>Length: <input type="number" id="pinLength" min="4" max="12" value="4" oninput="updatePinLengthSlider()"></span>
             </label>
+        </div>
+        <div id="patternConfig" class="config">
+            <label>
+                <input type="range" id="patternConnectionsSlider" min="2" max="9" value="4" oninput="updatePatternConnections()">
+                <span>Connections: <input type="number" id="patternConnections" min="2" max="9" value="4" oninput="updatePatternConnectionsSlider()"></span>
+            </label>
+        </div>
+        <div id="patternGraphic" class="config">
+            <svg class="pattern-grid" viewBox="0 0 150 150">
+                <circle class="pattern-dot" id="dot1" cx="25" cy="25" r="10"></circle>
+                <circle class="pattern-dot" id="dot2" cx="75" cy="25" r="10"></circle>
+                <circle class="pattern-dot" id="dot3" cx="125" cy="25" r="10"></circle>
+                <circle class="pattern-dot" id="dot4" cx="25" cy="75" r="10"></circle>
+                <circle class="pattern-dot" id="dot5" cx="75" cy="75" r="10"></circle>
+                <circle class="pattern-dot" id="dot6" cx="125" cy="75" r="10"></circle>
+                <circle class="pattern-dot" id="dot7" cx="25" cy="125" r="10"></circle>
+                <circle class="pattern-dot" id="dot8" cx="75" cy="125" r="10"></circle>
+                <circle class="pattern-dot" id="dot9" cx="125" cy="125" r="10"></circle>
+                <line id="line1" class="pattern-line" x1="0" y1="0" x2="0" y2="0" />
+                <line id="line2" class="pattern-line" x1="0" y1="0" x2="0" y2="0" />
+                <line id="line3" class="pattern-line" x1="0" y1="0" x2="0" y2="0" />
+                <line id="line4" class="pattern-line" x1="0" y1="0" x2="0" y2="0" />
+                <line id="line5" class="pattern-line" x1="0" y1="0" x2="0" y2="0" />
+                <line id="line6" class="pattern-line" x1="0" y1="0" x2="0" y2="0" />
+                <line id="line7" class="pattern-line" x1="0" y1="0" x2="0" y2="0" />
+                <line id="line8" class="pattern-line" x1="0" y1="0" x2="0" y2="0" />
+            </svg>
         </div>
         <button id="generate">Generate</button>
         <div id="result" onclick="copyToClipboard()">Click to copy</div>

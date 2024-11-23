@@ -4,6 +4,8 @@ function showConfig(type) {
     document.getElementById('passwordConfig').style.display = type === 'password' ? 'block' : 'none';
     document.getElementById('passphraseConfig').style.display = type === 'passphrase' ? 'block' : 'none';
     document.getElementById('pinConfig').style.display = type === 'pin' ? 'block' : 'none';
+    document.getElementById('patternConfig').style.display = type === 'pattern' ? 'block' : 'none';
+    document.getElementById('patternGraphic').style.display = type === 'pattern' ? 'block' : 'none'; // Add this line
     document.getElementById('generate').setAttribute('data-type', type);
 
     document.querySelectorAll('.button-container button').forEach(button => {
@@ -23,6 +25,8 @@ function generate() {
         generatePassphrase();
     } else if (type === 'pin') {
         generatePin();
+    } else if (type === 'pattern') {
+        generatePattern();
     }
 }
 
@@ -89,6 +93,70 @@ function generatePin() {
         pin += Math.floor(Math.random() * 10);
     }
     displayResult(pin);
+}
+
+function generatePattern() {
+    const connections = parseInt(document.getElementById('patternConnections').value);
+    const grid = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ];
+    let pattern = [];
+    let used = new Set();
+
+    while (pattern.length < connections) {
+        const row = Math.floor(Math.random() * 3);
+        const col = Math.floor(Math.random() * 3);
+        const dot = grid[row][col];
+        if (!used.has(dot)) {
+            pattern.push(dot);
+            used.add(dot);
+        }
+    }
+
+    displayPatternGraphic(pattern);
+    displayResult(pattern.join('-'));
+}
+
+function displayPatternGraphic(pattern) {
+    document.querySelectorAll('.pattern-dot').forEach(dot => {
+        dot.classList.remove('selected');
+        dot.textContent = '';
+    });
+
+    document.querySelectorAll('.pattern-line').forEach(line => {
+        line.setAttribute('x1', 0);
+        line.setAttribute('y1', 0);
+        line.setAttribute('x2', 0);
+        line.setAttribute('y2', 0);
+    });
+
+    document.querySelectorAll('.pattern-grid text').forEach(text => {
+        text.remove();
+    });
+
+    pattern.forEach((dot, index) => {
+        const dotElement = document.getElementById('dot' + dot);
+        dotElement.classList.add('selected');
+
+        const orderNumber = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        orderNumber.setAttribute('x', dotElement.getAttribute('cx'));
+        orderNumber.setAttribute('y', dotElement.getAttribute('cy'));
+        orderNumber.setAttribute('text-anchor', 'middle');
+        orderNumber.setAttribute('dominant-baseline', 'central');
+        orderNumber.textContent = index + 1;
+        document.querySelector('.pattern-grid').appendChild(orderNumber);
+
+        if (index > 0) {
+            const prevDot = document.getElementById('dot' + pattern[index - 1]);
+            const line = document.getElementById('line' + index);
+            line.setAttribute('x1', prevDot.getAttribute('cx'));
+            line.setAttribute('y1', prevDot.getAttribute('cy'));
+            line.setAttribute('x2', dotElement.getAttribute('cx'));
+            line.setAttribute('y2', dotElement.getAttribute('cy'));
+        }
+    });
 }
 
 function displayResult(result) {
@@ -182,6 +250,18 @@ function updatePinLength() {
 function updatePinLengthSlider() {
     const slider = document.getElementById('pinLengthSlider');
     const numberInput = document.getElementById('pinLength');
+    slider.value = numberInput.value;
+}
+
+function updatePatternConnections() {
+    const slider = document.getElementById('patternConnectionsSlider');
+    const numberInput = document.getElementById('patternConnections');
+    numberInput.value = slider.value;
+}
+
+function updatePatternConnectionsSlider() {
+    const slider = document.getElementById('patternConnectionsSlider');
+    const numberInput = document.getElementById('patternConnections');
     slider.value = numberInput.value;
 }
 
