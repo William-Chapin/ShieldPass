@@ -5,7 +5,7 @@ function toggleConfig() {
     const type = document.getElementById('typeSelector').value;
     document.getElementById('passwordConfig').style.display = type === 'password' ? 'block' : 'none';
     document.getElementById('passphraseConfig').style.display = type === 'passphrase' ? 'block' : 'none';
-    generate(); // Auto-generate on config toggle
+    generate();
 }
 
 function generate() {
@@ -29,7 +29,7 @@ function generatePassword() {
     const lowercase = "abcdefghijklmnopqrstuvwxyz";
     const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    let charset = lowercase; // Always include lowercase
+    let charset = lowercase;
     if (includeNumbers) charset += numbers;
     if (includeSymbols) charset += symbols;
     if (includeUppercase) charset += uppercase;
@@ -38,7 +38,7 @@ function generatePassword() {
     while (password.length < length) {
         const randomIndex = Math.floor(Math.random() * charset.length);
         const char = charset[randomIndex];
-        if (password.length === 0 && symbols.includes(char)) continue; // Ensure password doesn't start with a symbol
+        if (password.length === 0 && symbols.includes(char)) continue;
         if (noSequential && password.length > 0 && (password.charAt(password.length - 1) === char || Math.abs(password.charCodeAt(password.length - 1) - char.charCodeAt(0)) === 1)) continue;
         password += char;
     }
@@ -56,7 +56,7 @@ function generatePassphrase() {
         .then(words => {
             const passphrase = words.map((word, index) => {
                 if (capitalizeFirst) word = word.charAt(0).toUpperCase() + word.slice(1);
-                if (index % 2 === 0) { // Apply to 50% of the words
+                if (index % 2 === 0) {
                     if (includeNumbers && Math.random() > 0.5) {
                         word += Math.floor(Math.random() * 10);
                     } else if (includeSymbols) {
@@ -78,7 +78,7 @@ function displayResult(result) {
     resultElement.textContent = result;
 
     resultElement.classList.remove('bounce');
-    void resultElement.offsetWidth; // Trigger reflow
+    void resultElement.offsetWidth;
     resultElement.classList.add('bounce');
 }
 
