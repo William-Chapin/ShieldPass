@@ -1,3 +1,3 @@
 # ShieldPass
-Generate secure passwords or passphrases!
+Generate secure passwords, passphrases, PINs, or patterns!
 Demo: https://william-chapin.github.io/ShieldPass/
